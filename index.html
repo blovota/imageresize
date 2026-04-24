@@ -1,308 +1,781 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Resizer</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f0f0f;
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
-    }
-    h1 { font-size: 1.5rem; margin-bottom: 8px; font-weight: 600; }
-    p.sub { color: #888; margin-bottom: 32px; font-size: 0.9rem; }
-    
-    .drop-zone {
-      width: 100%;
-      max-width: 500px;
-      height: 200px;
-      border: 2px dashed #333;
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: #1a1a1a;
-      margin-bottom: 24px;
-    }
-    .drop-zone:hover, .drop-zone.dragover {
-      border-color: #3b82f6;
-      background: #111827;
-    }
-    .drop-zone input { display: none; }
-    .drop-zone svg { width: 40px; height: 40px; margin-bottom: 12px; opacity: 0.5; }
-    
-    .controls {
-      width: 100%;
-      max-width: 500px;
-      background: #1a1a1a;
-      border-radius: 16px;
-      padding: 24px;
-      display: none;
-    }
-    .controls.active { display: block; }
-    
-    .input-group {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .field {
-      flex: 1;
-    }
-    label {
-      display: block;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #888;
-      margin-bottom: 6px;
-    }
-    input[type="number"], select {
-      width: 100%;
-      padding: 10px 12px;
-      background: #0f0f0f;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 0.95rem;
-      outline: none;
-    }
-    input[type="number"]:focus, select:focus { border-color: #3b82f6; }
-    
-    .checkbox {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-      color: #aaa;
-    }
-    .checkbox input { width: 16px; height: 16px; accent-color: #3b82f6; }
-    
-    .preview-area {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .preview-area img {
-      max-width: 100%;
-      max-height: 300px;
-      border-radius: 8px;
-      border: 1px solid #333;
-    }
-    .file-info {
-      font-size: 0.8rem;
-      color: #666;
-      margin-top: 8px;
-    }
-    
-    button {
-      width: 100%;
-      padding: 14px;
-      background: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover { background: #2563eb; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    
-    .presets {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .preset {
-      padding: 6px 12px;
-      background: #0f0f0f;
-      border: 1px solid #333;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      color: #aaa;
-      transition: all 0.2s;
-    }
-    .preset:hover {
-      border-color: #3b82f6;
-      color: #fff;
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TeachNaija Image Resizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --orange: #F56C2B;
+  --pink: #EA2C8A;
+  --dark: #090909;
+  --card: #111;
+  --card2: #161616;
+  --border: #1f1f1f;
+  --border2: #2a2a2a;
+  --text: #EFEFEF;
+  --muted: #555;
+  --muted2: #888;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* HEADER */
+.header {
+  flex-shrink: 0;
+  height: 52px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 14px;
+}
+.logo {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--orange) 0%, var(--pink) 100%);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 12px; color: #fff;
+  flex-shrink: 0;
+}
+.header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 700;
+}
+.header-sub { font-size: 11px; color: var(--muted); margin-left: 2px; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.selected-badge {
+  font-size: 11px;
+  background: rgba(245,108,43,0.12);
+  border: 1px solid rgba(245,108,43,0.25);
+  color: var(--orange);
+  padding: 3px 10px; border-radius: 20px;
+  font-family: 'Syne', sans-serif; font-weight: 600;
+  white-space: nowrap;
+  max-width: 260px; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* LAYOUT */
+.body-wrap {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+.sidebar-bottom {
+  flex-shrink: 0;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Upload */
+.upload-zone {
+  border: 1.5px dashed var(--border2);
+  border-radius: 10px;
+  padding: 18px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+  position: relative;
+  margin-bottom: 16px;
+}
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--orange);
+  background: rgba(245,108,43,0.04);
+}
+.upload-zone input {
+  position: absolute; inset: 0;
+  opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.upload-icon { font-size: 22px; margin-bottom: 5px; opacity: 0.4; }
+.upload-zone p { font-size: 12px; color: var(--muted2); line-height: 1.5; }
+.upload-zone strong { color: var(--orange); }
+.file-name { font-size: 11px; color: var(--orange); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Accordion sections */
+.section { margin-bottom: 14px; }
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; padding: 7px 8px;
+  border-radius: 7px;
+  transition: background 0.15s;
+  user-select: none;
+}
+.section-header:hover { background: var(--card2); }
+.section-label {
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted2);
+  font-weight: 500; display: flex; align-items: center; gap: 6px;
+}
+.section-label .ci { font-size: 12px; }
+.chevron { font-size: 9px; color: var(--muted); transition: transform 0.2s; }
+.section.collapsed .chevron { transform: rotate(-90deg); }
+.section-body { padding: 4px 2px 0; }
+.section.collapsed .section-body { display: none; }
+
+/* Format items */
+.format-list { display: flex; flex-direction: column; gap: 2px; }
+.fmt {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px; border-radius: 7px;
+  cursor: pointer; transition: background 0.1s;
+  border: 1px solid transparent;
+}
+.fmt:hover { background: var(--card2); }
+.fmt.active {
+  background: rgba(245,108,43,0.09);
+  border-color: rgba(245,108,43,0.28);
+}
+.fmt-info { display: flex; flex-direction: column; gap: 1px; }
+.fmt-name { font-size: 12px; font-weight: 500; color: var(--text); }
+.fmt.active .fmt-name { color: var(--orange); }
+.fmt-size { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.fmt-tag {
+  font-size: 9px; padding: 2px 6px; border-radius: 3px;
+  font-weight: 600; background: var(--border2); color: var(--muted2);
+  text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+}
+.fmt.active .fmt-tag { background: rgba(245,108,43,0.15); color: var(--orange); }
+
+/* Controls */
+.ctrl-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.ctrl-row label { font-size: 11px; color: var(--muted2); width: 44px; flex-shrink: 0; }
+.ctrl-row .val { font-size: 11px; color: var(--orange); width: 34px; text-align: right; flex-shrink: 0; }
+input[type=range] { flex: 1; accent-color: var(--orange); cursor: pointer; }
+
+/* Toggles */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 10px; background: var(--dark); border-radius: 8px;
+  border: 1px solid var(--border2); cursor: pointer;
+  transition: border-color 0.15s; margin-bottom: 8px;
+}
+.toggle-row:hover { border-color: var(--muted); }
+.toggle-row.on-pink { border-color: rgba(234,44,138,0.4); background: rgba(234,44,138,0.05); }
+.toggle-row.on-orange { border-color: rgba(245,108,43,0.4); background: rgba(245,108,43,0.05); }
+.toggle-name { font-size: 12px; color: var(--muted2); }
+.toggle-row.on-pink .toggle-name,
+.toggle-row.on-orange .toggle-name { color: var(--text); }
+.sw {
+  width: 32px; height: 18px; background: var(--border2);
+  border-radius: 9px; position: relative; transition: background 0.2s; flex-shrink: 0;
+}
+.toggle-row.on-pink  .sw { background: var(--pink); }
+.toggle-row.on-orange .sw { background: var(--orange); }
+.sw::after {
+  content: ''; width: 12px; height: 12px; background: #fff;
+  border-radius: 50%; position: absolute;
+  top: 3px; left: 3px; transition: left 0.2s;
+}
+.toggle-row.on-pink  .sw::after,
+.toggle-row.on-orange .sw::after { left: 17px; }
+
+.text-fields { display: none; padding: 0 2px 6px; }
+.text-fields.on { display: block; }
+.tf { margin-bottom: 7px; }
+.tf label { font-size: 10px; color: var(--muted); display: block; margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+.tf input, .tf select {
+  width: 100%; background: var(--dark); border: 1px solid var(--border2);
+  border-radius: 7px; padding: 8px 10px; color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 12px; outline: none;
+  transition: border-color 0.15s;
+}
+.tf input:focus { border-color: var(--pink); }
+.tf-row { display: flex; gap: 6px; }
+.tf-row .tf { flex: 1; margin-bottom: 0; }
+input[type=color] { height: 37px; padding: 3px 6px; cursor: pointer; }
+
+/* Buttons */
+.btn {
+  width: 100%; padding: 11px; border-radius: 8px; border: none;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.btn-ghost {
+  background: transparent; color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.btn-ghost:hover { background: var(--card2); color: var(--text); }
+.btn-export {
+  background: linear-gradient(135deg, var(--orange) 0%, var(--pink) 100%);
+  color: #fff;
+}
+.btn-export:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-export:active { transform: translateY(0); }
+.btn-export:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+/* CANVAS AREA */
+.canvas-area {
+  background: #080808;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  overflow: hidden; position: relative; gap: 14px;
+}
+.canvas-area::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px; opacity: 0.25; pointer-events: none;
+}
+.canvas-wrap { position: relative; z-index: 1; }
+.canvas-frame {
+  position: relative; overflow: hidden; border-radius: 3px;
+  box-shadow: 0 0 0 1px var(--border2), 0 24px 80px rgba(0,0,0,0.7);
+  background: #fff; cursor: grab;
+  transition: width 0.22s ease, height 0.22s ease;
+}
+.canvas-frame:active { cursor: grabbing; }
+.canvas-frame img {
+  position: absolute; top: 0; left: 0;
+  pointer-events: none; user-select: none; -webkit-user-drag: none;
+  will-change: transform;
+}
+.strip-preview {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--orange), var(--pink));
+  opacity: 0; transition: opacity 0.2s; pointer-events: none;
+}
+.strip-preview.on { opacity: 1; }
+.empty-state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; position: absolute; inset: 0; pointer-events: none;
+}
+.empty-icon { font-size: 36px; opacity: 0.15; }
+.empty-state p { font-size: 12px; color: var(--muted); opacity: 0.7; }
+
+.canvas-info {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 14px; font-size: 11px; color: var(--muted2);
+}
+.canvas-info b { color: var(--text); font-weight: 500; }
+.dot { width: 3px; height: 3px; background: var(--border2); border-radius: 50%; }
+
+@media (max-width: 700px) {
+  .body-wrap { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  html, body { overflow: auto; }
+  .canvas-area { min-height: 50vw; }
+  .sidebar { max-height: 60vh; }
+}
+</style>
 </head>
 <body>
 
+<div class="header">
+  <div class="logo">TN</div>
   <h1>Image Resizer</h1>
-  <p class="sub">Upload a Canva export, set dimensions, download. No server, no storage.</p>
-
-  <div class="drop-zone" id="dropZone">
-    <input type="file" id="fileInput" accept="image/*">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="17 8 12 3 7 8"/>
-      <line x1="12" y1="3" x2="12" y2="15"/>
-    </svg>
-    <span>Click or drop image here</span>
+  <span class="header-sub">by TeachNaija</span>
+  <div class="header-right">
+    <div class="selected-badge" id="selectedBadge">Select a format →</div>
   </div>
+</div>
 
-  <div class="controls" id="controls">
-    <div class="preview-area">
-      <img id="preview" alt="Preview">
-      <div class="file-info" id="fileInfo"></div>
-    </div>
+<div class="body-wrap">
+  <div class="sidebar">
+    <div class="sidebar-scroll">
 
-    <label style="margin-bottom:8px;display:block;">Quick Presets</label>
-    <div class="presets">
-      <span class="preset" onclick="setSize(1080,1080)">Instagram 1:1</span>
-      <span class="preset" onclick="setSize(1080,1350)">Instagram 4:5</span>
-      <span class="preset" onclick="setSize(1080,1920)">Stories/Reels</span>
-      <span class="preset" onclick="setSize(1200,628)">Twitter/X</span>
-      <span class="preset" onclick="setSize(1920,1080)">YouTube Thumb</span>
-      <span class="preset" onclick="setSize(1200,630)">Facebook</span>
-    </div>
-
-    <div class="input-group">
-      <div class="field">
-        <label>Width (px)</label>
-        <input type="number" id="width" min="1" max="8000">
+      <!-- Upload -->
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="upload" accept="image/*"/>
+        <div class="upload-icon">🖼</div>
+        <p><strong>Click to upload</strong> or drag &amp; drop</p>
+        <div class="file-name" id="fileName"></div>
       </div>
-      <div class="field">
-        <label>Height (px)</label>
-        <input type="number" id="height" min="1" max="8000">
+
+      <!-- INSTAGRAM -->
+      <div class="section" id="sec-ig">
+        <div class="section-header" onclick="toggleSec('ig')">
+          <span class="section-label"><span class="ci">📸</span>Instagram</span>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="section-body"><div class="format-list">
+          <div class="fmt active" data-key="ig-sq" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Square Post</span><span class="fmt-size">1080 × 1080 px</span></div><span class="fmt-tag">1:1</span></div>
+          <div class="fmt" data-key="ig-port" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Portrait Post</span><span class="fmt-size">1080 × 1350 px</span></div><span class="fmt-tag">4:5</span></div>
+          <div class="fmt" data-key="ig-land" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Landscape Post</span><span class="fmt-size">1080 × 566 px</span></div><span class="fmt-tag">1.91:1</span></div>
+          <div class="fmt" data-key="ig-story" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Story / Reels</span><span class="fmt-size">1080 × 1920 px</span></div><span class="fmt-tag">9:16</span></div>
+          <div class="fmt" data-key="ig-profile" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Profile Picture</span><span class="fmt-size">320 × 320 px</span></div><span class="fmt-tag">1:1</span></div>
+        </div></div>
+      </div>
+
+      <!-- FACEBOOK -->
+      <div class="section collapsed" id="sec-fb">
+        <div class="section-header" onclick="toggleSec('fb')">
+          <span class="section-label"><span class="ci">📘</span>Facebook</span>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="section-body"><div class="format-list">
+          <div class="fmt" data-key="fb-post" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Feed Post</span><span class="fmt-size">1200 × 630 px</span></div><span class="fmt-tag">1.91:1</span></div>
+          <div class="fmt" data-key="fb-sq" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Square Post</span><span class="fmt-size">1080 × 1080 px</span></div><span class="fmt-tag">1:1</span></div>
+          <div class="fmt" data-key="fb-story" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Story / Reels</span><span class="fmt-size">1080 × 1920 px</span></div><span class="fmt-tag">9:16</span></div>
+          <div class="fmt" data-key="fb-cover" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Page Cover</span><span class="fmt-size">820 × 312 px</span></div><span class="fmt-tag">Cover</span></div>
+          <div class="fmt" data-key="fb-event" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Event Cover</span><span class="fmt-size">1920 × 1080 px</span></div><span class="fmt-tag">16:9</span></div>
+          <div class="fmt" data-key="fb-profile" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Profile Picture</span><span class="fmt-size">170 × 170 px</span></div><span class="fmt-tag">1:1</span></div>
+        </div></div>
+      </div>
+
+      <!-- YOUTUBE -->
+      <div class="section collapsed" id="sec-yt">
+        <div class="section-header" onclick="toggleSec('yt')">
+          <span class="section-label"><span class="ci">▶️</span>YouTube</span>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="section-body"><div class="format-list">
+          <div class="fmt" data-key="yt-thumb" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Thumbnail</span><span class="fmt-size">1280 × 720 px</span></div><span class="fmt-tag">16:9</span></div>
+          <div class="fmt" data-key="yt-banner" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Channel Banner</span><span class="fmt-size">2560 × 1440 px</span></div><span class="fmt-tag">Banner</span></div>
+          <div class="fmt" data-key="yt-short" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Shorts</span><span class="fmt-size">1080 × 1920 px</span></div><span class="fmt-tag">9:16</span></div>
+          <div class="fmt" data-key="yt-profile" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Profile Picture</span><span class="fmt-size">800 × 800 px</span></div><span class="fmt-tag">1:1</span></div>
+        </div></div>
+      </div>
+
+      <!-- TWITTER/X -->
+      <div class="section collapsed" id="sec-x">
+        <div class="section-header" onclick="toggleSec('x')">
+          <span class="section-label"><span class="ci">𝕏</span>Twitter / X</span>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="section-body"><div class="format-list">
+          <div class="fmt" data-key="x-post" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Post Image</span><span class="fmt-size">1200 × 675 px</span></div><span class="fmt-tag">16:9</span></div>
+          <div class="fmt" data-key="x-header" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Header / Banner</span><span class="fmt-size">1500 × 500 px</span></div><span class="fmt-tag">3:1</span></div>
+          <div class="fmt" data-key="x-profile" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Profile Picture</span><span class="fmt-size">400 × 400 px</span></div><span class="fmt-tag">1:1</span></div>
+        </div></div>
+      </div>
+
+      <!-- LINKEDIN -->
+      <div class="section collapsed" id="sec-li">
+        <div class="section-header" onclick="toggleSec('li')">
+          <span class="section-label"><span class="ci">💼</span>LinkedIn</span>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="section-body"><div class="format-list">
+          <div class="fmt" data-key="li-post" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Post Image</span><span class="fmt-size">1200 × 627 px</span></div><span class="fmt-tag">1.91:1</span></div>
+          <div class="fmt" data-key="li-cover" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Profile Cover</span><span class="fmt-size">1584 × 396 px</span></div><span class="fmt-tag">Cover</span></div>
+          <div class="fmt" data-key="li-profile" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Profile Picture</span><span class="fmt-size">400 × 400 px</span></div><span class="fmt-tag">1:1</span></div>
+          <div class="fmt" data-key="li-company" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Company Cover</span><span class="fmt-size">1128 × 191 px</span></div><span class="fmt-tag">Banner</span></div>
+        </div></div>
+      </div>
+
+      <!-- TIKTOK / WHATSAPP -->
+      <div class="section collapsed" id="sec-social">
+        <div class="section-header" onclick="toggleSec('social')">
+          <span class="section-label"><span class="ci">💬</span>TikTok / WhatsApp</span>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="section-body"><div class="format-list">
+          <div class="fmt" data-key="tiktok" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">TikTok Video</span><span class="fmt-size">1080 × 1920 px</span></div><span class="fmt-tag">9:16</span></div>
+          <div class="fmt" data-key="tiktok-profile" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">TikTok Profile</span><span class="fmt-size">200 × 200 px</span></div><span class="fmt-tag">1:1</span></div>
+          <div class="fmt" data-key="wa-status" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">WhatsApp Status</span><span class="fmt-size">1080 × 1920 px</span></div><span class="fmt-tag">9:16</span></div>
+          <div class="fmt" data-key="wa-post" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">WhatsApp Post</span><span class="fmt-size">1080 × 1080 px</span></div><span class="fmt-tag">1:1</span></div>
+        </div></div>
+      </div>
+
+      <!-- WEB & PINTEREST -->
+      <div class="section collapsed" id="sec-web">
+        <div class="section-header" onclick="toggleSec('web')">
+          <span class="section-label"><span class="ci">🌐</span>Web &amp; Pinterest</span>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="section-body"><div class="format-list">
+          <div class="fmt" data-key="pinterest" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Pinterest Pin</span><span class="fmt-size">1000 × 1500 px</span></div><span class="fmt-tag">2:3</span></div>
+          <div class="fmt" data-key="og" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">OG / Meta Image</span><span class="fmt-size">1200 × 630 px</span></div><span class="fmt-tag">SEO</span></div>
+          <div class="fmt" data-key="email-hdr" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Email Header</span><span class="fmt-size">600 × 200 px</span></div><span class="fmt-tag">Email</span></div>
+        </div></div>
+      </div>
+
+      <!-- LOGO / FAVICON / PWA -->
+      <div class="section collapsed" id="sec-brand">
+        <div class="section-header" onclick="toggleSec('brand')">
+          <span class="section-label"><span class="ci">✦</span>Logo, Favicon &amp; PWA</span>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="section-body"><div class="format-list">
+          <div class="fmt" data-key="logo-sq" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Logo Square</span><span class="fmt-size">500 × 500 px</span></div><span class="fmt-tag">Logo</span></div>
+          <div class="fmt" data-key="logo-wide" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Logo Wide</span><span class="fmt-size">1200 × 400 px</span></div><span class="fmt-tag">Logo</span></div>
+          <div class="fmt" data-key="fav-16" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Favicon 16px</span><span class="fmt-size">16 × 16 px</span></div><span class="fmt-tag">ICO</span></div>
+          <div class="fmt" data-key="fav-32" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Favicon 32px</span><span class="fmt-size">32 × 32 px</span></div><span class="fmt-tag">ICO</span></div>
+          <div class="fmt" data-key="fav-64" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Favicon 64px</span><span class="fmt-size">64 × 64 px</span></div><span class="fmt-tag">ICO</span></div>
+          <div class="fmt" data-key="apple-touch" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Apple Touch Icon</span><span class="fmt-size">180 × 180 px</span></div><span class="fmt-tag">iOS</span></div>
+          <div class="fmt" data-key="pwa-192" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">PWA Icon 192</span><span class="fmt-size">192 × 192 px</span></div><span class="fmt-tag">PWA</span></div>
+          <div class="fmt" data-key="pwa-512" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">PWA Icon 512</span><span class="fmt-size">512 × 512 px</span></div><span class="fmt-tag">PWA</span></div>
+          <div class="fmt" data-key="pwa-splash" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">PWA Splash Screen</span><span class="fmt-size">1242 × 2688 px</span></div><span class="fmt-tag">PWA</span></div>
+          <div class="fmt" data-key="og-logo" onclick="selectFmt(this)"><div class="fmt-info"><span class="fmt-name">Schema.org Logo</span><span class="fmt-size">512 × 512 px</span></div><span class="fmt-tag">Schema</span></div>
+        </div></div>
+      </div>
+
+      <!-- ZOOM -->
+      <div class="section">
+        <div class="section-header" style="cursor:default">
+          <span class="section-label">Scale &amp; Position</span>
+        </div>
+        <div class="section-body">
+          <div class="ctrl-row">
+            <label>Zoom</label>
+            <input type="range" id="zoomSlider" min="10" max="300" value="100"/>
+            <span class="val" id="zoomVal">100%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEXT OVERLAY -->
+      <div class="section">
+        <div class="section-header" style="cursor:default">
+          <span class="section-label">Text Overlay</span>
+        </div>
+        <div class="section-body">
+          <div class="toggle-row" id="textToggle" onclick="toggleText()">
+            <span class="toggle-name">Add headline text</span>
+            <div class="sw"></div>
+          </div>
+          <div class="text-fields" id="textFields">
+            <div class="tf">
+              <label>Headline</label>
+              <input type="text" id="textInput" placeholder="Your headline here…"/>
+            </div>
+            <div class="tf-row">
+              <div class="tf"><label>Size (px)</label><input type="number" id="fontSize" value="60" min="10" max="400"/></div>
+              <div class="tf"><label>Color</label><input type="color" id="textColor" value="#EA2C8A"/></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BRAND STRIP (original first-code feature) -->
+      <div class="section">
+        <div class="section-header" style="cursor:default">
+          <span class="section-label">Brand Strip</span>
+        </div>
+        <div class="section-body">
+          <div class="toggle-row" id="stripToggle" onclick="toggleStrip()">
+            <span class="toggle-name">Gradient strip on export</span>
+            <div class="sw"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sidebar-scroll -->
+    <div class="sidebar-bottom">
+      <button class="btn btn-ghost" onclick="smartCenter()">⊕ Reset &amp; Center</button>
+      <button class="btn btn-export" id="exportBtn" onclick="exportImage()" disabled>↓ Export Image</button>
+    </div>
+  </div><!-- /sidebar -->
+
+  <!-- CANVAS -->
+  <div class="canvas-area" id="canvasArea">
+    <div class="canvas-wrap" id="canvasWrap">
+      <div class="canvas-frame" id="canvasFrame">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">📷</div>
+          <p>Upload an image to begin</p>
+        </div>
+        <img id="img" alt="preview" style="display:none"/>
+        <div class="strip-preview" id="stripPreview"></div>
       </div>
     </div>
-
-    <div class="checkbox">
-      <input type="checkbox" id="aspectLock" checked>
-      <label for="aspectLock" style="margin:0;cursor:pointer;">Lock aspect ratio</label>
+    <div class="canvas-info">
+      <b id="infoName">–</b>
+      <div class="dot"></div>
+      <span id="infoDims">Select a format above</span>
+      <div class="dot"></div>
+      <span style="color:var(--muted)">Drag to reposition · Scroll to zoom</span>
     </div>
-
-    <div class="input-group">
-      <div class="field">
-        <label>Format</label>
-        <select id="format">
-          <option value="image/png">PNG</option>
-          <option value="image/jpeg">JPEG</option>
-          <option value="image/webp">WebP</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Quality (JPEG/WebP)</label>
-        <input type="number" id="quality" min="0.1" max="1" step="0.1" value="0.92">
-      </div>
-    </div>
-
-    <button id="downloadBtn">Download Resized Image</button>
   </div>
+</div><!-- /body-wrap -->
 
-  <script>
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    const controls = document.getElementById('controls');
-    const preview = document.getElementById('preview');
-    const widthInput = document.getElementById('width');
-    const heightInput = document.getElementById('height');
-    const aspectLock = document.getElementById('aspectLock');
-    const fileInfo = document.getElementById('fileInfo');
-    
-    let originalImage = null;
-    let aspectRatio = 1;
+<script>
+const SIZES = {
+  'ig-sq':         [1080, 1080, 'Instagram Square'],
+  'ig-port':       [1080, 1350, 'Instagram Portrait'],
+  'ig-land':       [1080,  566, 'Instagram Landscape'],
+  'ig-story':      [1080, 1920, 'Instagram Story/Reels'],
+  'ig-profile':    [ 320,  320, 'Instagram Profile Pic'],
+  'fb-post':       [1200,  630, 'Facebook Post'],
+  'fb-sq':         [1080, 1080, 'Facebook Square'],
+  'fb-story':      [1080, 1920, 'Facebook Story/Reels'],
+  'fb-cover':      [ 820,  312, 'Facebook Page Cover'],
+  'fb-event':      [1920, 1080, 'Facebook Event Cover'],
+  'fb-profile':    [ 170,  170, 'Facebook Profile Pic'],
+  'yt-thumb':      [1280,  720, 'YouTube Thumbnail'],
+  'yt-banner':     [2560, 1440, 'YouTube Channel Banner'],
+  'yt-short':      [1080, 1920, 'YouTube Shorts'],
+  'yt-profile':    [ 800,  800, 'YouTube Profile Pic'],
+  'x-post':        [1200,  675, 'Twitter/X Post'],
+  'x-header':      [1500,  500, 'Twitter/X Header'],
+  'x-profile':     [ 400,  400, 'Twitter/X Profile Pic'],
+  'li-post':       [1200,  627, 'LinkedIn Post'],
+  'li-cover':      [1584,  396, 'LinkedIn Profile Cover'],
+  'li-profile':    [ 400,  400, 'LinkedIn Profile Pic'],
+  'li-company':    [1128,  191, 'LinkedIn Company Cover'],
+  'tiktok':        [1080, 1920, 'TikTok Video'],
+  'tiktok-profile':[ 200,  200, 'TikTok Profile Pic'],
+  'wa-status':     [1080, 1920, 'WhatsApp Status'],
+  'wa-post':       [1080, 1080, 'WhatsApp Post'],
+  'pinterest':     [1000, 1500, 'Pinterest Pin'],
+  'og':            [1200,  630, 'OG Meta Image'],
+  'email-hdr':     [ 600,  200, 'Email Header'],
+  'logo-sq':       [ 500,  500, 'Logo Square'],
+  'logo-wide':     [1200,  400, 'Logo Wide'],
+  'fav-16':        [  16,   16, 'Favicon 16px'],
+  'fav-32':        [  32,   32, 'Favicon 32px'],
+  'fav-64':        [  64,   64, 'Favicon 64px'],
+  'apple-touch':   [ 180,  180, 'Apple Touch Icon'],
+  'pwa-192':       [ 192,  192, 'PWA Icon 192px'],
+  'pwa-512':       [ 512,  512, 'PWA Icon 512px'],
+  'pwa-splash':    [1242, 2688, 'PWA Splash Screen'],
+  'og-logo':       [ 512,  512, 'Schema.org Logo'],
+};
 
-    dropZone.addEventListener('click', () => fileInput.click());
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
-    });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
-    });
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files[0]) handleFile(e.target.files[0]);
-    });
+// Brand/PWA formats skip the watermark
+const NO_WATERMARK = new Set(['logo-sq','logo-wide','fav-16','fav-32','fav-64','apple-touch','pwa-192','pwa-512','pwa-splash','og-logo']);
 
-    function handleFile(file) {
-      if (!file.type.startsWith('image/')) return alert('Please upload an image file');
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        originalImage = new Image();
-        originalImage.onload = () => {
-          aspectRatio = originalImage.width / originalImage.height;
-          preview.src = originalImage.src;
-          widthInput.value = originalImage.width;
-          heightInput.value = originalImage.height;
-          fileInfo.textContent = `${originalImage.width}×${originalImage.height} • ${(file.size/1024/1024).toFixed(2)} MB`;
-          controls.classList.add('active');
-        };
-        originalImage.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+const S = {
+  image: null, format: 'ig-sq',
+  pos: { x: 0, y: 0 }, zoom: 100,
+  showText: false, showStrip: false,
+  dragging: false, dragStart: { x: 0, y: 0 },
+};
+
+const uploadEl    = document.getElementById('upload');
+const uploadZone  = document.getElementById('uploadZone');
+const imgEl       = document.getElementById('img');
+const frame       = document.getElementById('canvasFrame');
+const emptyState  = document.getElementById('emptyState');
+const exportBtn   = document.getElementById('exportBtn');
+const zoomSlider  = document.getElementById('zoomSlider');
+const zoomValEl   = document.getElementById('zoomVal');
+const textToggle  = document.getElementById('textToggle');
+const textFields  = document.getElementById('textFields');
+const stripToggle = document.getElementById('stripToggle');
+const stripPreview= document.getElementById('stripPreview');
+const selectedBadge = document.getElementById('selectedBadge');
+
+// Preview sizing
+function previewSize() {
+  const area = document.getElementById('canvasArea');
+  const maxW = area.clientWidth  - 56;
+  const maxH = area.clientHeight - 80;
+  const [w, h] = SIZES[S.format];
+  const scale  = Math.min(maxW / w, maxH / h, 1);
+  return { pw: Math.round(w * scale), ph: Math.round(h * scale), ps: scale };
+}
+
+function updateFrame() {
+  const { pw, ph } = previewSize();
+  frame.style.width  = pw + 'px';
+  frame.style.height = ph + 'px';
+  const [w, h, name] = SIZES[S.format];
+  selectedBadge.textContent     = name + ' · ' + w + '×' + h;
+  document.getElementById('infoName').textContent  = name;
+  document.getElementById('infoDims').textContent  = w + ' × ' + h + ' px';
+  applyTransform();
+}
+
+// Upload
+uploadEl.onchange = e => loadFile(e.target.files[0]);
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault(); uploadZone.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) loadFile(f);
+});
+
+function loadFile(file) {
+  if (!file) return;
+  document.getElementById('fileName').textContent = file.name;
+  const r = new FileReader();
+  r.onload = ev => {
+    S.image = ev.target.result;
+    resetPos();
+    imgEl.src = S.image;
+    emptyState.style.display = 'none';
+    imgEl.style.display = 'block';
+    exportBtn.disabled = false;
+  };
+  r.readAsDataURL(file);
+}
+imgEl.onload = () => updateFrame();
+
+// Format select
+function selectFmt(el) {
+  document.querySelectorAll('.fmt').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  S.format = el.dataset.key;
+  resetPos();
+  updateFrame();
+}
+
+// Section accordion
+function toggleSec(id) {
+  document.getElementById('sec-' + id).classList.toggle('collapsed');
+}
+
+// Zoom (slider + scroll)
+zoomSlider.oninput = () => {
+  S.zoom = parseInt(zoomSlider.value);
+  zoomValEl.textContent = S.zoom + '%';
+  applyTransform();
+};
+
+frame.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -5 : 5;
+  S.zoom = Math.min(300, Math.max(10, S.zoom + delta));
+  zoomSlider.value = S.zoom;
+  zoomValEl.textContent = S.zoom + '%';
+  applyTransform();
+}, { passive: false });
+
+// Transform
+function applyTransform() {
+  if (!S.image) return;
+  const { pw, ph, ps } = previewSize();
+  const [fw, fh] = SIZES[S.format];
+  const zf = S.zoom / 100;
+  const nw = imgEl.naturalWidth  || fw;
+  const nh = imgEl.naturalHeight || fh;
+  const fit = Math.max(fw / nw, fh / nh) * zf;
+  const ds  = ps * fit;
+
+  imgEl.style.width  = Math.round(nw * ds) + 'px';
+  imgEl.style.height = Math.round(nh * ds) + 'px';
+
+  const cx = (pw - nw * ds) / 2 + S.pos.x * ps;
+  const cy = (ph - nh * ds) / 2 + S.pos.y * ps;
+  imgEl.style.transform = `translate(${cx}px,${cy}px)`;
+}
+
+// Drag mouse
+function dragStart(cx, cy) { S.dragging = true; S.dragStart = { x: cx - S.pos.x, y: cy - S.pos.y }; }
+function dragMove(cx, cy)  { if (!S.dragging) return; S.pos.x = cx - S.dragStart.x; S.pos.y = cy - S.dragStart.y; applyTransform(); }
+function dragEnd()         { S.dragging = false; }
+
+frame.addEventListener('mousedown',    e => dragStart(e.clientX, e.clientY));
+document.addEventListener('mousemove', e => dragMove(e.clientX, e.clientY));
+document.addEventListener('mouseup',   dragEnd);
+frame.addEventListener('touchstart',   e => { e.preventDefault(); dragStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+document.addEventListener('touchmove', e => { if (S.dragging) { e.preventDefault(); dragMove(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+document.addEventListener('touchend',  dragEnd);
+
+function resetPos() { S.pos = { x: 0, y: 0 }; S.zoom = 100; zoomSlider.value = 100; zoomValEl.textContent = '100%'; }
+function smartCenter() { resetPos(); applyTransform(); }
+
+// Toggles
+function toggleText() {
+  S.showText = !S.showText;
+  textToggle.classList.toggle('on-pink', S.showText);
+  textFields.classList.toggle('on', S.showText);
+}
+function toggleStrip() {
+  S.showStrip = !S.showStrip;
+  stripToggle.classList.toggle('on-orange', S.showStrip);
+  stripPreview.classList.toggle('on', S.showStrip);
+}
+
+// Export
+function exportImage() {
+  if (!S.image) return;
+  const [fw, fh, fname] = SIZES[S.format];
+  const canvas = document.createElement('canvas');
+  canvas.width = fw; canvas.height = fh;
+  const ctx = canvas.getContext('2d');
+
+  const ex = new Image();
+  ex.src = S.image;
+  ex.onload = () => {
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, fw, fh);
+
+    const zf  = S.zoom / 100;
+    const fit = Math.max(fw / ex.naturalWidth, fh / ex.naturalHeight) * zf;
+    const iw  = ex.naturalWidth  * fit;
+    const ih  = ex.naturalHeight * fit;
+    ctx.drawImage(ex, (fw - iw) / 2 + S.pos.x, (fh - ih) / 2 + S.pos.y, iw, ih);
+
+    // Brand strip
+    if (S.showStrip) {
+      const sh = Math.max(Math.round(fh * 0.012), 8);
+      const g  = ctx.createLinearGradient(0, 0, fw, 0);
+      g.addColorStop(0, '#F56C2B'); g.addColorStop(1, '#EA2C8A');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, fh - sh, fw, sh);
     }
 
-    function setSize(w, h) {
-      widthInput.value = w;
-      heightInput.value = h;
+    // Text overlay
+    if (S.showText) {
+      const text  = document.getElementById('textInput').value;
+      const size  = Math.max(parseInt(document.getElementById('fontSize').value) || 60, 10);
+      const color = document.getElementById('textColor').value;
+      ctx.save();
+      ctx.fillStyle   = color;
+      ctx.font        = `bold ${size}px 'Arial Black', Arial, sans-serif`;
+      ctx.shadowColor = 'rgba(0,0,0,0.25)';
+      ctx.shadowBlur  = size * 0.2;
+      ctx.fillText(text, Math.round(fw * 0.046), size + Math.round(fh * 0.04));
+      ctx.restore();
     }
 
-    widthInput.addEventListener('input', () => {
-      if (aspectLock.checked && originalImage) {
-        heightInput.value = Math.round(widthInput.value / aspectRatio);
-      }
-    });
+    // Ghost watermark — skip on brand/logo/PWA exports where you own the asset
+    if (!NO_WATERMARK.has(S.format)) {
+      ctx.save();
+      ctx.globalAlpha = 0.055;
+      ctx.fillStyle   = '#FFFFFF';
+      const wmS = Math.max(Math.round(Math.min(fw, fh) * 0.022), 10);
+      ctx.font  = `500 ${wmS}px Arial, sans-serif`;
+      const wm  = 'teachnaija.com';
+      const mw  = ctx.measureText(wm).width;
+      ctx.fillText(wm, fw - mw - Math.round(fw * 0.022), fh - Math.round(fh * 0.016));
+      ctx.restore();
+    }
 
-    heightInput.addEventListener('input', () => {
-      if (aspectLock.checked && originalImage) {
-        widthInput.value = Math.round(heightInput.value * aspectRatio);
-      }
-    });
+    const slug = fname.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const link = document.createElement('a');
+    link.download = `teachnaija-${slug}.png`;
+    link.href     = canvas.toDataURL('image/png');
+    link.click();
+  };
+}
 
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-      if (!originalImage) return;
-      
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const w = parseInt(widthInput.value);
-      const h = parseInt(heightInput.value);
-      
-      canvas.width = w;
-      canvas.height = h;
-      
-      // Use better quality scaling
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(originalImage, 0, 0, w, h);
-      
-      const format = document.getElementById('format').value;
-      const quality = parseFloat(document.getElementById('quality').value);
-      const mime = format === 'image/png' ? 'image/png' : format;
-      const q = format === 'image/png' ? undefined : quality;
-      
-      canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const ext = format.split('/')[1];
-        a.download = `resized-${w}x${h}.${ext}`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }, mime, q);
-    });
-  </script>
-
+// Responsive
+new ResizeObserver(() => { if (S.image) updateFrame(); }).observe(document.getElementById('canvasArea'));
+updateFrame();
+</script>
 </body>
 </html>
